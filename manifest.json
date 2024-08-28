@@ -16,5 +16,12 @@
   
   "action": {
     "default_title": "Encrypt & Export Bookmarks"
+  },
+
+  "icons": {
+    "16": "lockicon16.png",
+    "24": "lockicon24.png",
+    "32": "lockicon32.png",
+    "64": "lockicon64.png"
   }
 }
