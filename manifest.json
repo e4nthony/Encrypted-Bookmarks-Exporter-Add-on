@@ -19,9 +19,9 @@
   },
 
   "icons": {
-    "16": "lockicon16.png",
-    "24": "lockicon24.png",
-    "32": "lockicon32.png",
-    "64": "lockicon64.png"
+    "16": "assets/lockicon16.png",
+    "24": "assets/lockicon24.png",
+    "32": "assets/lockicon32.png",
+    "64": "assets/lockicon64.png"
   }
 }
