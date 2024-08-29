@@ -8,7 +8,7 @@
 
   "manifest_version": 3,
 
-  "permissions": ["bookmarks"],
+  "permissions": ["bookmarks", "downloads"],
   
   "background": {
     "scripts": ["src/background.js"]

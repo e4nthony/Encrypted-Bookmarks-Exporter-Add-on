@@ -57,4 +57,54 @@ html_string = gettingTree.then((bookmarksTree) => {
   return html;
 });
 
+// var exporter = require('exporter');
 
+
+/**
+ * This function is using standart downloading method to save data into file.
+ * (works)
+ * 
+ * @param {*} filename 
+ * @param {*} contentPromise 
+ */
+async function downloadWithAnchor(filename, contentPromise) {
+
+  var content = await Promise.resolve(contentPromise);
+
+  const blob = new Blob([content], { type: 'text/plain' });  // blob - Binary Large Object
+
+  const link  = document.createElement('a'); // a - anchor
+  link.href = URL.createObjectURL(blob); // prepare link
+  link.download = filename;
+
+  link.click(); // trigger the download
+  
+  URL.revokeObjectURL(link.href); // utilize url
+}
+// downloadWithAnchor('bookmarks-export.html', html_string);
+
+
+/**
+ * This function is using build-in browser API to download data into file. [preferable]
+ * (works)
+ * 
+ * @param {*} filename 
+ * @param {*} contentPromise 
+ */
+async function downloadWithBrowserAPI(filename, contentPromise) {
+  
+  var content = await Promise.resolve(contentPromise);
+
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  
+  // works for both firefox and chrome
+  browser.downloads.download({
+      url: url,
+      filename: filename,
+      saveAs: true 
+  });
+
+  setTimeout(() => URL.revokeObjectURL(url), 100000); // utilize url
+}
+downloadWithBrowserAPI('bookmarks-export.html', html_string);
