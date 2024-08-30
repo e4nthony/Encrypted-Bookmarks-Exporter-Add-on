@@ -15,7 +15,8 @@
   },
   
   "action": {
-    "default_title": "Encrypt & Export Bookmarks"
+    "default_title": "Encrypt & Export Bookmarks",
+    "default_popup": "src/popup/menu.html"
   },
 
   "icons": {

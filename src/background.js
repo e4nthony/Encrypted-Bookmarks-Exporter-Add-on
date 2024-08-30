@@ -107,4 +107,15 @@ async function downloadWithBrowserAPI(filename, contentPromise) {
 
   setTimeout(() => URL.revokeObjectURL(url), 100000); // utilize url
 }
+
+
+
+
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'encrypt') {
 downloadWithBrowserAPI('bookmarks-export.html', html_string);
+  }
+});
+
+
+

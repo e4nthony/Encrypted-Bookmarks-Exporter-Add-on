@@ -1,0 +1,27 @@
+body {
+  width: 260px;
+  height: 140px;
+  padding: 16px;
+  border: 1px;
+  border-color: red;
+}
+
+button {
+  width: 100%;
+  /* height: auto; */
+
+  border: 1px;
+  border-color: red;
+  
+  /* margin: auto; */
+  padding: 4px;
+
+  text-align: center;
+  font-size: 1em;
+  /* cursor: pointer; */
+  background-color: #81bafa;
+}
+
+button:hover {
+  background-color: #25a3f7;
+}
