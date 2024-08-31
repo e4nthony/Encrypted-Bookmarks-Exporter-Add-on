@@ -1,26 +1,65 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <link rel="stylesheet" href="menu.css"/>
+  <link rel="stylesheet" href="tabs/styles.css">
   <title>Add-on Main Menu</title>
 </head>
+
 <body>
-
-  <div class="container">
-    <!-- Title -->
+  
+  <div class="tab-container">
+    
     <h1>Encrypted Bookmarks Exporter</h1>
-
-    <h4>Input password</h4>
-
-    <!-- Password Input -->
-    <input type="password" id="passwordInput" placeholder="Enter your password for encryption" />
-    <small>Your password will be required to decrypt the file, remember it.</small>
-
-    <!-- Optional Button (if needed) -->
-    <button id="encryptBtn" class="button" type="button">Encrypt & Export Bookmarks</button>
-  </div>
-
-
-  <script src="menu.js"></script>
-</body>
-</html>
+    
+    <div class="tab-headers-container"> <!-- Tabs Headers -->
+      
+      <div class="tab-link " id="tab_0_imp">
+        Import
+      </div>
+      <div class="tab-link" id="tab_1_exp">
+        Export
+      </div>
+      
+    </div>
+    
+    
+    <div class="tab-content" tag="tab-main"> <!-- IMPORT -->
+      
+      <div class="container-import" >
+        <h2>Importer</h2>
+        <br>
+        
+        <h4>Select the HTML file for import:</h4>
+        <input type="file" id="fileInput" />
+        
+        <h4>Provide password of that file:</h4>
+        <input type="password" id="passwordInput_dec" placeholder="password for file decryption" />
+        <button id="decryptButton" tag="main-button" type="button">Decrypt & Import Bookmarks</button>
+      </div>
+      
+    </div> <!-- end IMPORT -->
+    
+    
+    <div class="tab-content active" tag="tab-main"> <!-- EXPORT --> <!-- active tab by default -->
+      
+      <div class="container-export" >
+        <h2>Exporter</h2>
+        <br>
+        
+        <h4>Enter password for encryption</h4>
+        <input type="password" id="passwordInput_enc" placeholder="password for file encryption" />
+        <small>Your password will be required to decrypt the file, remember it.</small>
+        
+        <button id="encryptButton" tag="main-button" type="button">Encrypt & Export Bookmarks</button>
+      </div>
+      
+    </div><!-- end EXPORT -->
+    
+    
+    <script src="menu.js" type="text/javascript" ></script>
+    <script src="tabs/tabs_script.js" type="text/javascript" ></script>
+    
+  </body>
+  </html>

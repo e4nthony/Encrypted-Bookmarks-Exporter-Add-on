@@ -57,30 +57,28 @@ html_string = gettingTree.then((bookmarksTree) => {
   return html;
 });
 
-// var exporter = require('exporter');
 
+// /**
+//  * This function is using standart downloading method to save data into file.
+//  * (works)
+//  * 
+//  * @param {*} filename 
+//  * @param {*} contentPromise 
+//  */
+// async function downloadWithAnchor(filename, contentPromise) {
 
-/**
- * This function is using standart downloading method to save data into file.
- * (works)
- * 
- * @param {*} filename 
- * @param {*} contentPromise 
- */
-async function downloadWithAnchor(filename, contentPromise) {
+//   var content = await Promise.resolve(contentPromise);
 
-  var content = await Promise.resolve(contentPromise);
+//   const blob = new Blob([content], { type: 'text/plain' });  // blob - Binary Large Object
 
-  const blob = new Blob([content], { type: 'text/plain' });  // blob - Binary Large Object
+//   const link  = document.createElement('a'); // a - anchor
+//   link.href = URL.createObjectURL(blob); // prepare link
+//   link.download = filename;
 
-  const link  = document.createElement('a'); // a - anchor
-  link.href = URL.createObjectURL(blob); // prepare link
-  link.download = filename;
-
-  link.click(); // trigger the download
+//   link.click(); // trigger the download
   
-  URL.revokeObjectURL(link.href); // utilize url
-}
+//   URL.revokeObjectURL(link.href); // utilize url
+// }
 // downloadWithAnchor('bookmarks-export.html', html_string);
 
 
@@ -94,28 +92,73 @@ async function downloadWithAnchor(filename, contentPromise) {
 async function downloadWithBrowserAPI(filename, contentPromise) {
   
   var content = await Promise.resolve(contentPromise);
-
+  
   const blob = new Blob([content], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
   
   // works for both firefox and chrome
   browser.downloads.download({
-      url: url,
-      filename: filename,
-      saveAs: true 
+    url: url,
+    filename: filename,
+    saveAs: true 
   });
-
+  
   setTimeout(() => URL.revokeObjectURL(url), 100000); // utilize url
 }
 
 
+function extractBookmarksFromHTML(doc) {
+  const bookmarks = [];
+  const links = doc.querySelectorAll('a');
+
+  links.forEach(link => {
+    bookmarks.push({
+      title: link.textContent,
+      url: link.href,
+      parentId: link.parentId
+    });
+  });
+
+  return bookmarks;
+}
+
+async function handleFileImport(content) {
+  console.log('entered handleFileImport(content)'); //DEBUG
+
+  // read HTML to get bookmarks
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(content, 'text/html');
+  const bookmarks = extractBookmarksFromHTML(doc);
+
+  console.log('Bookmarks:', bookmarks); //DEBUG
+
+  for (const bookmark of bookmarks) {
+    // actually creating bookmarks in browser
+    await browser.bookmarks.create(bookmark);
+  }
+  console.log('Bookmarks imported successfully.');
+}
 
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+
   if (message.action === 'encrypt') {
-downloadWithBrowserAPI('bookmarks-export.html', html_string);
+    console.log('Listener heard encrypt'); //DEBUG
+    downloadWithBrowserAPI('bookmarks-export.html', html_string);
+  }
+  else if (message.action === 'decrypt') {
+    console.log('Listener heard decrypt'); //DEBUG
+    handleFileImport(message.fileContent);
   }
 });
 
 
+// browser.runtime.onStartup.addListener(() => {
+//   console.log("Extension has started now.");
+//   browser.sidebarAction.open(); // opens without clicking, too fast
+// });
 
+browser.action.onClicked.addListener(() => {
+  console.log("User clicked on extension icon, opening sidebar."); //
+  browser.sidebarAction.open();
+});

@@ -1,0 +1,84 @@
+/* Tabs CSS */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    max-width: 200;
+}
+
+.tab-container {
+    max-width: 200;
+    margin: 0;
+    /* background-color: #fff; */
+    /* border-radius: 10px; */
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+    overflow: hidden;
+    height: auto;
+    
+    display: flex;
+    align-items: center , top;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.tab-headers-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: top;
+}
+
+.tab-link {
+    flex: 1;
+    padding: 5px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #fde3b2;
+    color: white;
+    transition: background-color 0.5s ease;
+
+    border-radius: 10px;
+    border: 3px solid #422800;
+}
+
+.tab-link:hover {
+    background-color: #b87e32;
+}
+
+.tab-content {
+    padding: 5px;
+    display: none;
+    height: auto;
+    overflow-y: auto;
+}
+
+
+/* h1 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #4CAF50;
+} */
+
+/* p {
+    line-height: 1.6;
+} */
+
+span {
+    color: #FF5722;
+}
+
+/* .container-import{
+    background-color: transparent;
+}
+
+.container-export{
+    background-color: rgba(255, 0, 0, 0.5);
+} */
+
+div[tag="tab-main"] {
+    background-color: transparent;
+}
+
+.active {
+    display: block;
+    background-color: #45a049;
+}
