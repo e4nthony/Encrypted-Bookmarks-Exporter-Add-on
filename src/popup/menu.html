@@ -5,7 +5,22 @@
   <title>Add-on Main Menu</title>
 </head>
 <body>
-  <button id="encryptBtn">Encrypt & Save Bookmarks</button>
+
+  <div class="container">
+    <!-- Title -->
+    <h1>Encrypted Bookmarks Exporter</h1>
+
+    <h4>Input password</h4>
+
+    <!-- Password Input -->
+    <input type="password" id="passwordInput" placeholder="Enter your password for encryption" />
+    <small>Your password will be required to decrypt the file, remember it.</small>
+
+    <!-- Optional Button (if needed) -->
+    <button id="encryptBtn" class="button" type="button">Encrypt & Export Bookmarks</button>
+  </div>
+
+
   <script src="menu.js"></script>
 </body>
 </html>
