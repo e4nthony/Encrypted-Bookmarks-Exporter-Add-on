@@ -11,12 +11,16 @@
   "permissions": ["bookmarks", "downloads"],
   
   "background": {
-    "scripts": ["src/background.js"]
+    "scripts": ["src/background.js"],
+    "service_worker": "src/background.js"
   },
   
   "action": {
-    "default_title": "Encrypt & Export Bookmarks",
-    "default_popup": "src/popup/menu.html"
+    "default_title": "Encrypt & Export Bookmarks"
+  },
+
+  "sidebar_action": {
+    "default_panel": "src/popup/menu.html"
   },
 
   "icons": {
