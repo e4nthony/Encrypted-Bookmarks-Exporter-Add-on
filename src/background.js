@@ -300,8 +300,9 @@ async function handleFileExport(passInput_enc) {
   // const promise = await zip_file(html_string);
   // downloadWithBrowserAPI('bookmarks-export.zip', promise);
 
+  encryptedFile = await encryptHTMLFile(html_string, passInput_enc)
   
-  downloadWithBrowserAPI('bookmarks-export.zip', html_string); // promise - zipped_file
+  downloadWithBrowserAPI('bookmarks-export.enc', encryptedFile.encryptedData); 
 }
 
 
@@ -323,6 +324,95 @@ async function handleFileImport(content, passInput_dec) {
   tolog('Bookmarks imported successfully.'); // TAG: release
 }
 
+
+//----------------------------- Encryption & Decryption --------------------------------------
+
+/**
+ * generates a cryptographic key (KeyMaterial) from a password  
+ * 
+ * uses the PBKDF2 algorithm to derive a PBKDF2_BaseKey from the password
+ * 
+ * @param {*} password 
+ * @param {*} salt 
+ * 
+ * @returns - object that used as key for AES-GCM encryption and decryption. (its format according to documentation of AES-GCM)
+ * 
+ */
+async function generateKeyFromPassword(password, salt) {
+
+  const enc = new TextEncoder();
+  const rawKey = enc.encode(password); //password bytes
+
+  /**
+   * importKey(...) returns a CryptoKey object
+   * 
+   * object for use in PBKDF2 key derivation 
+   * need to convert the password into a CryptoKey object so it can be processed in PBKDF2 key derivation.
+   */
+  const PBKDF2_BaseKey = await crypto.subtle.importKey(
+    "raw",              // format
+    rawKey,             // keyData - encoded password bytes
+    { name: "PBKDF2" }, // algorithm
+    false,              // extractable - "A boolean value indicating whether it will be possible to export the key using SubtleCrypto.exportKey() or SubtleCrypto.wrapKey()."
+    ["deriveKey"]       // keyUsages - "An Array indicating what can be done with the key. "
+  );
+
+  /**
+   * "The deriveKey() method of the SubtleCrypto interface can be used to derive a secret key from a master key."
+   */
+  return crypto.subtle.deriveKey(
+    {// PBKDF2Params
+      name: "PBKDF2",
+      hash: "SHA-256",  // "A string representing the digest algorithm to use ." for PBKDF2.
+      salt: salt,       // "This should be a random or pseudo-random value of at least 16 bytes. Unlike the input key material passed into deriveKey(), salt does not need to be kept secret." needed to ensure that the derived key is unique.
+      iterations: 100000  // "the number of times the hash function will be executed"
+    },
+    
+    PBKDF2_BaseKey,   // baseKey - "A CryptoKey representing the input to the derivation algorithm."
+    
+    { // AesKeyGenParams object
+      name: "AES-GCM",
+      length: 256   // "the length in bits of the key to generate"
+    }, 
+    
+    false,  // extractable
+    
+    ["encrypt", "decrypt"]  // keyUsages
+  );
+}
+
+
+async function encryptHTMLFile(htmlContent, password) {
+
+  const enc = new TextEncoder();
+
+  const salt = crypto.getRandomValues(new Uint8Array(16));  // 128-bit salt
+  const iv = crypto.getRandomValues(new Uint8Array(12));    // Initialization Vector for AES-GCM (12-byte iv is optimal choice)
+
+  const key = await generateKeyFromPassword(password, salt);  // result of deriveKey()
+
+  /**
+   * encrypt(...) - "It takes as its arguments a key to encrypt with, some algorithm-specific parameters,|
+   * and the data to encrypt (also known as "plaintext").
+   * It returns a Promise which will be fulfilled with the encrypted data (also known as "ciphertext")."
+   * 
+   * format of ciphertext is: [Ciphertext][Authentication Tag] ! (iv not included)
+   */
+  const encryptedContent = await crypto.subtle.encrypt(
+      { name: "AES-GCM", iv: iv },  // AesGcmParams object.
+      key,                          // key
+      enc.encode(htmlContent)       // plaintext
+  );
+
+  return {
+      salt: salt,
+      iv: iv,
+      encryptedData: new Uint8Array(encryptedContent),
+  };
+}
+
+
+//----------------------------- Listeners --------------------------------------
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
