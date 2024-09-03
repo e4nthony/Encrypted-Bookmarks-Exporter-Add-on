@@ -1,6 +1,21 @@
 // requests full bookmarks tree
 let gettingTree = browser.bookmarks.getTree();
 
+
+/* DEBUGGING MODE TOGGLE - enables logging into console */
+const DEBUGGING_MODE = true;
+
+/**
+ * logs any arguments the func gets as is .
+ * (inside of this file*)
+ */
+function tolog(...arguments) {
+  if (DEBUGGING_MODE){
+    console.log(...arguments);
+  }
+}
+
+
 /**
  * Code bellow will generate html in Netscape-Bookmarks format. 
  * Generator made by reverse engineering.
@@ -56,8 +71,8 @@ html_string = gettingTree.then((bookmarksTree) => {
   
   html += `</DL><p>`;  // end of html file
   
-  console.log('generated HTML:'); //DEBUG
-  console.log(html);              //DEBUG
+  tolog('generated HTML:'); //DEBUG
+  tolog(html);              //DEBUG
   return html;
 });
 
@@ -162,14 +177,14 @@ async function extractBookmarksFromHTML(document) {
    * @returns 
    */
   async function process_HTML_node(node) {
-    console.log('entered process_HTML_node. node:', node); //DEBUG
+    tolog('entered process_HTML_node. node:', node); //DEBUG
     
     if (node.nodeName === 'DT') {
       const folder = node.querySelector('h3');
-      console.log('node.querySelector(\'h3\') folder: ', folder); //DEBUG
+      tolog('node.querySelector(\'h3\') folder: ', folder); //DEBUG
       
       const link = node.querySelector('a');
-      console.log('node.querySelector(\'a\') link: ', link); //DEBUG
+      tolog('node.querySelector(\'a\') link: ', link); //DEBUG
       
 
       const last_element_in_stack = foldersStack.length - 1;
@@ -184,7 +199,7 @@ async function extractBookmarksFromHTML(document) {
           parentId: currentFolder.id,
           title: folder.textContent
         });
-        console.log('folder 0 created: ', newFolder); //DEBUG
+        tolog('folder 0 created: ', newFolder); //DEBUG
 
         // // add this newFolder we created to list of currentFolder children
         // currentFolder.children.push(newFolder);  
@@ -226,20 +241,20 @@ async function extractBookmarksFromHTML(document) {
   } // end - process_HTML_node
   
 
-  // console.log('document :\n', document);                                   // DEBUG - html document
-  // console.log('document.body :\n', document.body);                         // DEBUG - <body>
-  // console.log('document.body.children :\n', document.body.children);       // DEBUG - html collection
-  // console.log('document.body.children[0] :\n', document.body.children[0]); // DEBUG - <h1>
+  // tolog('document :\n', document);                                   // DEBUG - html document
+  // tolog('document.body :\n', document.body);                         // DEBUG - <body>
+  // tolog('document.body.children :\n', document.body.children);       // DEBUG - html collection
+  // tolog('document.body.children[0] :\n', document.body.children[0]); // DEBUG - <h1>
 
   const global_DL = document.body.querySelector('dl'); // select the Definition List at root level
   process_HTML_node(global_DL); // call the func and actually process the root DL node
   
-  console.log('extractBookmarksFromHTML finished. return :\n', foldersStack); //DEBUG
+  tolog('extractBookmarksFromHTML finished. return :\n', foldersStack); //DEBUG
 } // end - extractBookmarksFromHTML
 
 
 async function handleFileExport(passInput_enc) {
-  console.log('entered handleFileExport()'); //DEBUG
+  tolog('entered handleFileExport()'); //DEBUG
 
   // /**
   //  * works
@@ -268,14 +283,14 @@ async function handleFileExport(passInput_enc) {
 
 
 async function handleFileImport(content, passInput_dec) {
-  console.log('entered handleFileImport()'); //DEBUG
+  tolog('entered handleFileImport()'); //DEBUG
   
   ///**
   // * problems
   // * @returns 
   // */
   // async function unzip_file(content) {
-  //   console.log('entered unzip_file()'); //DEBUG
+  //   tolog('entered unzip_file()'); //DEBUG
   //   try {
   //     var js_zip = new JSZip();
   //     const zip = await js_zip.loadAsync(content);
@@ -299,22 +314,22 @@ async function handleFileImport(content, passInput_dec) {
   const document = parser.parseFromString(content, 'text/html');
   const bookmarks = await extractBookmarksFromHTML(document); 
 
-  console.log('Bookmarks:', bookmarks); //DEBUG
+  tolog('Bookmarks:', bookmarks); //DEBUG
 
-  console.log('Bookmarks imported successfully.'); // TAG: release
+  tolog('Bookmarks imported successfully.'); // TAG: release
 }
 
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.action === 'encrypt') {
-    console.log('Listener heard encrypt'); //DEBUG
+    tolog('Listener heard encrypt'); //DEBUG
     handleFileExport(message.passInput_enc);
     // downloadWithBrowserAPI('bookmarks-export.html', html_string); //todo
     
   }
   else if (message.action === 'decrypt') {
-    console.log('Listener heard decrypt'); //DEBUG
+    tolog('Listener heard decrypt'); //DEBUG
     handleFileImport(message.fileContent, message.passInput_dec);
   }
 
@@ -322,13 +337,13 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 
 // browser.runtime.onStartup.addListener(() => {
-//   console.log("Extension has started now.");
+//   tolog("Extension has started now.");
 //   browser.sidebarAction.open(); // opens without clicking, too fast
 // });
 
 
 browser.action.onClicked.addListener(() => {
-  console.log("User clicked on extension icon, opening sidebar."); //
+  tolog("User clicked on extension icon, opening sidebar."); //
   browser.sidebarAction.open();
 });
 
