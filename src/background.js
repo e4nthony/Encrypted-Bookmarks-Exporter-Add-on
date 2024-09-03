@@ -155,7 +155,7 @@ async function downloadWithBrowserAPI(filename, contentPromise) {
  * 
  * @param {*} doc
  */
-async function extractBookmarksFromHTML(document) {
+async function extractBookmarksFromHTMLandImport(document) {
   // let currentFolder = { folder_id: 'root', title: 'root' }; 
   // let foldersStack = [currentFolder];
   let foldersStack = [];
@@ -253,29 +253,52 @@ async function extractBookmarksFromHTML(document) {
 } // end - extractBookmarksFromHTML
 
 
+/**
+   * works
+   * @returns 
+   */
+async function zip_file() {
+  const zip = new JSZip();
+
+  zip.file(`bookmarks-export.html`, html_string); //add file to future zip
+
+  var promise = null;
+  if (JSZip.support.uint8array) {
+    promise = zip.generateAsync({type : "uint8array"}); //option {type : "blob"}  // uint8array is good for processing raw binary data, so it better option in making incryption manipulations
+  } else {
+    promise = zip.generateAsync({type : "string"});
+  }
+
+  return promise;
+}
+
+
+  /**
+  * bug, not working as expected
+  * @returns 
+  */
+  async function unzip_file(content) {
+    tolog('entered unzip_file()'); //DEBUG
+    try {
+      var js_zip = new JSZip();
+      const zip = await js_zip.loadAsync(content);
+      const file = zip.file("bookmarks-export.html");
+      if (file) {
+        return await file.async("uint8array");
+      } else {
+        console.error("File not found in the zip archive.");
+      }
+    } catch (error) {
+      console.error("Error unzipping file:", error);
+    }
+  }
+
+
 async function handleFileExport(passInput_enc) {
   tolog('entered handleFileExport()'); //DEBUG
 
-  // /**
-  //  * works
-  //  * @returns 
-  //  */
-  // async function zip_file() {
-  //   const zip = new JSZip();
-
-  //   zip.file(`bookmarks-export.html`, html_string); //add file to future zip
-  
-  //   var promise = null;
-  //   if (JSZip.support.uint8array) {
-  //     promise = zip.generateAsync({type : "uint8array"}); //option {type : "blob"}  // uint8array is good for processing raw binary data, so it better option in making incryption manipulations
-  //   } else {
-  //     promise = zip.generateAsync({type : "string"});
-  //   }
-
-  //   return promise;
-  // }
   // const promise = await zip_file();
-  // downloadWithBrowserAPI('bookmarks-export.zip', promise); // promise - zipped_file
+  // downloadWithBrowserAPI('bookmarks-export.zip', promise);
 
   
   downloadWithBrowserAPI('bookmarks-export.zip', html_string); // promise - zipped_file
@@ -285,25 +308,6 @@ async function handleFileExport(passInput_enc) {
 async function handleFileImport(content, passInput_dec) {
   tolog('entered handleFileImport()'); //DEBUG
   
-  ///**
-  // * problems
-  // * @returns 
-  // */
-  // async function unzip_file(content) {
-  //   tolog('entered unzip_file()'); //DEBUG
-  //   try {
-  //     var js_zip = new JSZip();
-  //     const zip = await js_zip.loadAsync(content);
-  //     const file = zip.file("bookmarks-export.html");
-  //     if (file) {
-  //       return await file.async("uint8array");
-  //     } else {
-  //       console.error("File not found in the zip archive.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error unzipping file:", error);
-  //   }
-  // }
   // const unzipped_file = await unzip_file(content);
   // // read HTML to get bookmarks
   // const parser = new DOMParser();
@@ -312,7 +316,7 @@ async function handleFileImport(content, passInput_dec) {
   // read HTML to get bookmarks
   const parser = new DOMParser();
   const document = parser.parseFromString(content, 'text/html');
-  const bookmarks = await extractBookmarksFromHTML(document); 
+  const bookmarks = await extractBookmarksFromHTMLandImport(document); 
 
   tolog('Bookmarks:', bookmarks); //DEBUG
 
