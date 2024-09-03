@@ -203,16 +203,13 @@ async function extractBookmarksFromHTML(document) {
           url: link.href
         });
 
-      } // end - if folder/link
+     } // end - if folder/link
 
     } // end - if DT
     
-    // else if (node.nodeName === 'DL') {
-    //   console.log('ENTERED else if (node.nodeName == \'DL\') /// node.childNodes: ', node.childNodes); //DEBUG
-    //   node.childNodes.forEach(async child => {
-    //     await process_HTML_node(child); // will recursively process every child node of current node 
-    //   });
-    // }
+
+    // reverse the order to add items into browser in right order so order will be exactly as in html
+    const childNodes_reversed_order = Array.from(node.childNodes).reverse();
 
     /**
      * example:
@@ -222,11 +219,12 @@ async function extractBookmarksFromHTML(document) {
      * Therefore, if we entered <DT> tag there is need to check children too.
      * need to run check on children in both cases (when node.nodeName === <DT> OR <DL>)
      */
-    node.childNodes.forEach(async child => {
+    childNodes_reversed_order.forEach(async child => {
       await process_HTML_node(child); // will recursively process every child node of current node 
     });
 
   } // end - process_HTML_node
+  
 
   // console.log('document :\n', document);                                   // DEBUG - html document
   // console.log('document.body :\n', document.body);                         // DEBUG - <body>
