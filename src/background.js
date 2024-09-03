@@ -241,24 +241,58 @@ async function extractBookmarksFromHTML(document) {
 async function handleFileExport() {
   console.log('entered handleFileExport()'); //DEBUG
 
-  // --to zip file--
-  const zip = new JSZip();
+  // /**
+  //  * works
+  //  * @returns 
+  //  */
+  // async function zip_file() {
+  //   const zip = new JSZip();
 
-  zip.file(`bookmarks-export.html`, html_string); //add file to future zip
+  //   zip.file(`bookmarks-export.html`, html_string); //add file to future zip
+  
+  //   var promise = null;
+  //   if (JSZip.support.uint8array) {
+  //     promise = zip.generateAsync({type : "uint8array"}); //option {type : "blob"}  // uint8array is good for processing raw binary data, so it better option in making incryption manipulations
+  //   } else {
+  //     promise = zip.generateAsync({type : "string"});
+  //   }
 
-  var promise = null;
-  if (JSZip.support.uint8array) {
-    promise = zip.generateAsync({type : "uint8array"}); //option {type : "blob"}  // uint8array is good for processing raw binary data, so it better option in making incryption manipulations
-  } else {
-    promise = zip.generateAsync({type : "string"});
-  }
+  //   return promise;
+  // }
+  // const promise = await zip_file();
+  // downloadWithBrowserAPI('bookmarks-export.zip', promise); // promise - zipped_file
 
-  downloadWithBrowserAPI('bookmarks-export.zip', promise); // promise - zipped_file
+  
+  downloadWithBrowserAPI('bookmarks-export.zip', html_string); // promise - zipped_file
 }
 
 
 async function handleFileImport(content) {
   console.log('entered handleFileImport()'); //DEBUG
+  
+  ///**
+  // * problems
+  // * @returns 
+  // */
+  // async function unzip_file(content) {
+  //   console.log('entered unzip_file()'); //DEBUG
+  //   try {
+  //     var js_zip = new JSZip();
+  //     const zip = await js_zip.loadAsync(content);
+  //     const file = zip.file("bookmarks-export.html");
+  //     if (file) {
+  //       return await file.async("uint8array");
+  //     } else {
+  //       console.error("File not found in the zip archive.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error unzipping file:", error);
+  //   }
+  // }
+  // const unzipped_file = await unzip_file(content);
+  // // read HTML to get bookmarks
+  // const parser = new DOMParser();
+  // const document = parser.parseFromString(unzipped_file, 'text/html');
 
   // read HTML to get bookmarks
   const parser = new DOMParser();
