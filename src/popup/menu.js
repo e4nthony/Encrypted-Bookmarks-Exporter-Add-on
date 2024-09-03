@@ -1,7 +1,7 @@
 //---Listeners of main buttons at main window.---
 
 document.getElementById('encryptButton').addEventListener('click', () => {
-  const passInput_enc = document.getElementById('passwordInput_enc');
+  const passInput_enc = document.getElementById('passwordInput_enc').value;
   browser.runtime.sendMessage({ action: 'encrypt', passInput_enc });
 });
 
@@ -11,7 +11,7 @@ document.getElementById('decryptButton').addEventListener('click', () => {
   const fileInput = document.getElementById('fileInput');
   console.log('file', fileInput); //DEBUG
 
-  const passInput_dec = document.getElementById('passwordInput_dec');
+  const passInput_dec = document.getElementById('passwordInput_dec').value;
 
   const file = fileInput.files[0]; //file is nested in fileInput 
   
