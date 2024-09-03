@@ -62,27 +62,29 @@ html_string = gettingTree.then((bookmarksTree) => {
 });
 
 
-// /**
-//  * This function is using standart downloading method to save data into file.
-//  * (works)
-//  * 
-//  * @param {*} filename 
-//  * @param {*} contentPromise 
-//  */
-// async function downloadWithAnchor(filename, contentPromise) {
+/**
+ * This function is using standart downloading method to save data into file.
+ * (works)
+ * 
+ * NOT IN USE
+ * 
+ * @param {*} filename 
+ * @param {*} contentPromise 
+ */
+async function downloadWithAnchor(filename, contentPromise) {
 
-//   var content = await Promise.resolve(contentPromise);
+  var content = await Promise.resolve(contentPromise);
 
-//   const blob = new Blob([content], { type: 'text/plain' });  // blob - Binary Large Object
+  const blob = new Blob([content], { type: 'text/plain' });  // blob - Binary Large Object
 
-//   const link  = document.createElement('a'); // a - anchor
-//   link.href = URL.createObjectURL(blob); // prepare link
-//   link.download = filename;
+  const link  = document.createElement('a'); // a - anchor
+  link.href = URL.createObjectURL(blob); // prepare link
+  link.download = filename;
 
-//   link.click(); // trigger the download
+  link.click(); // trigger the download
   
-//   URL.revokeObjectURL(link.href); // utilize url
-// }
+  URL.revokeObjectURL(link.href); // utilize url
+}
 // downloadWithAnchor('bookmarks-export.html', html_string);
 
 
@@ -110,21 +112,6 @@ async function downloadWithBrowserAPI(filename, contentPromise) {
   setTimeout(() => URL.revokeObjectURL(url), 100000); // utilize url
 }
 
-
-// function extractBookmarksFromHTML_OLD(doc) {
-//   const bookmarks = [];
-//   const links = doc.querySelectorAll('a');
-
-//   links.forEach(link => {
-//     bookmarks.push({
-//       title: link.textContent,
-//       url: link.href,
-//       parentId: link.parentId
-//     });
-//   });
-
-//   return bookmarks;
-// }
 
 /**
  * right now func have parsed text file that was at format NETSCAPE-Bookmark , (now document)
@@ -218,9 +205,7 @@ async function extractBookmarksFromHTML(document) {
 
       } // end - if folder/link
 
-      
-      
-    } 
+    } // end - if DT
     
     // else if (node.nodeName === 'DL') {
     //   console.log('ENTERED else if (node.nodeName == \'DL\') /// node.childNodes: ', node.childNodes); //DEBUG
@@ -265,11 +250,6 @@ async function handleFileImport(content) {
 
   console.log('Bookmarks:', bookmarks); //DEBUG
 
-  // for (const bookmark of bookmarks) {
-  //   // actually creating bookmarks in browser
-  //   await browser.bookmarks.create(bookmark);
-  // }
-
   console.log('Bookmarks imported successfully.'); // TAG: release
 }
 
@@ -292,7 +272,9 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 //   browser.sidebarAction.open(); // opens without clicking, too fast
 // });
 
+
 browser.action.onClicked.addListener(() => {
   console.log("User clicked on extension icon, opening sidebar."); //
   browser.sidebarAction.open();
 });
+
