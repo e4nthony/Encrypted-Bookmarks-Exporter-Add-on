@@ -11,7 +11,16 @@
   
   <div class="tab-container">
     
-    <h1>Encrypted Bookmarks Exporter</h1>
+    <div class="tittle-container">
+
+      <div class="logo-container">
+        <img src="/assets/lockicon64.png" alt="logo" id="logo" class="logo"> 
+      </div>
+
+      <h1>Encrypted Bookmarks Exporter</h1>
+
+    </div>
+
     
     <div class="tab-headers-container"> <!-- Tabs Headers -->
       
@@ -25,13 +34,13 @@
     </div>
     
     
-    <div class="tab-content" tag="tab-main"> <!-- IMPORT -->
+    <div class="tab-content" tag="tab-main" id="tab-content0"> <!-- IMPORT -->
       
       <div class="container-import" >
         <h2>Importer</h2>
         <br>
         
-        <h4>Select the HTML file for import:</h4>
+        <h4>Select a encrypted file for import:</h4>
         <input type="file" id="fileInput" />
         
         <h4>Provide password of that file:</h4>
@@ -42,13 +51,13 @@
     </div> <!-- end IMPORT -->
     
     
-    <div class="tab-content active" tag="tab-main"> <!-- EXPORT --> <!-- active tab by default -->
+    <div class="tab-content active" tag="tab-main" id="tab-content1"> <!-- EXPORT --> <!-- active tab by default -->
       
       <div class="container-export" >
         <h2>Exporter</h2>
         <br>
         
-        <h4>Enter password for encryption</h4>
+        <h4>Enter a password for encryption</h4>
         <input type="password" id="passwordInput_enc" placeholder="password for file encryption" />
         <small>Your password will be required to decrypt the file, remember it.</small>
         
