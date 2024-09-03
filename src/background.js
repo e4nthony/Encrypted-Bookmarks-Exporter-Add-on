@@ -238,7 +238,7 @@ async function extractBookmarksFromHTML(document) {
 } // end - extractBookmarksFromHTML
 
 
-async function handleFileExport() {
+async function handleFileExport(passInput_enc) {
   console.log('entered handleFileExport()'); //DEBUG
 
   // /**
@@ -267,7 +267,7 @@ async function handleFileExport() {
 }
 
 
-async function handleFileImport(content) {
+async function handleFileImport(content, passInput_dec) {
   console.log('entered handleFileImport()'); //DEBUG
   
   ///**
@@ -309,12 +309,13 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.action === 'encrypt') {
     console.log('Listener heard encrypt'); //DEBUG
-    handleFileExport();
+    handleFileExport(message.passInput_enc);
     // downloadWithBrowserAPI('bookmarks-export.html', html_string); //todo
+    
   }
   else if (message.action === 'decrypt') {
     console.log('Listener heard decrypt'); //DEBUG
-    handleFileImport(message.fileContent);
+    handleFileImport(message.fileContent, message.passInput_dec);
   }
 
 });
