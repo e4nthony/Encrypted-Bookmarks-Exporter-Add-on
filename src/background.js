@@ -238,8 +238,27 @@ async function extractBookmarksFromHTML(document) {
 } // end - extractBookmarksFromHTML
 
 
+async function handleFileExport() {
+  console.log('entered handleFileExport()'); //DEBUG
+
+  // --to zip file--
+  const zip = new JSZip();
+
+  zip.file(`bookmarks-export.html`, html_string); //add file to future zip
+
+  var promise = null;
+  if (JSZip.support.uint8array) {
+    promise = zip.generateAsync({type : "uint8array"}); //option {type : "blob"}  // uint8array is good for processing raw binary data, so it better option in making incryption manipulations
+  } else {
+    promise = zip.generateAsync({type : "string"});
+  }
+
+  downloadWithBrowserAPI('bookmarks-export.zip', promise); // promise - zipped_file
+}
+
+
 async function handleFileImport(content) {
-  console.log('entered handleFileImport(content)'); //DEBUG
+  console.log('entered handleFileImport()'); //DEBUG
 
   // read HTML to get bookmarks
   const parser = new DOMParser();
@@ -256,12 +275,14 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.action === 'encrypt') {
     console.log('Listener heard encrypt'); //DEBUG
-    downloadWithBrowserAPI('bookmarks-export.html', html_string);
+    handleFileExport();
+    // downloadWithBrowserAPI('bookmarks-export.html', html_string); //todo
   }
   else if (message.action === 'decrypt') {
     console.log('Listener heard decrypt'); //DEBUG
     handleFileImport(message.fileContent);
   }
+
 });
 
 

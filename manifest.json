@@ -3,7 +3,7 @@
   "homepage_url": "https://github.com/e4nthony/Encrypted-Bookmarks-Exporter-Add-on",
 
   "name": "Encrypted Bookmarks Exporter",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Export bookmarks into encrypted format to store as encrypted file and import them into other device using this add-on",
 
   "manifest_version": 3,
@@ -11,7 +11,7 @@
   "permissions": ["bookmarks", "downloads"],
   
   "background": {
-    "scripts": ["src/background.js"],
+    "scripts": ["src/background.js", "node_modules/jszip/dist/jszip.min.js"],
     "service_worker": "src/background.js"
   },
   
