@@ -1,8 +1,13 @@
 
-/* DEBUGGING MODE TOGGLE - enables logging into console */
-const DEBUGGING_MODE = true;
+/* ------- GLOBAL VARIABLES ------- */
+const SALT_LENGTH = 16
+const IV_LENGTH = 12
+
+const DEBUGGING_MODE = true; /* DEBUGGING MODE TOGGLE - enables logging into console */
+
+
 /**
- * logs any arguments the func gets as is .
+ * logs any arguments as is.
  * (inside of this file*)
  */
 function tolog(...arguments) {
@@ -240,7 +245,7 @@ async function extractBookmarksFromHTMLandImport(document) {
   
 
   // tolog('document :\n', document);                                   // DEBUG - html document
-  // tolog('document.body :\n', document.body);                         // DEBUG - <body>
+  tolog('document.body :\n', document.body);                         // DEBUG - <body>
   // tolog('document.body.children :\n', document.body.children);       // DEBUG - html collection
   // tolog('document.body.children[0] :\n', document.body.children[0]); // DEBUG - <h1>
 
@@ -300,28 +305,142 @@ async function handleFileExport(passInput_enc) {
   // const promise = await zip_file(html_string);
   // downloadWithBrowserAPI('bookmarks-export.zip', promise);
 
-  encryptedFile = await encryptHTMLFile(html_string, passInput_enc)
+  encryptedData = await encryptHTMLFile(html_string, passInput_enc)
   
-  downloadWithBrowserAPI('bookmarks-export.enc', encryptedFile.encryptedData); 
+  /**
+   * combines ciphertext with iv and salt
+   * as iv and salt needed for decrypting, but not required to be kept secret.
+   * therefore, the solution is to store them alongside with ciphertext to provide portability of encrypted file 
+   */
+  function combine(encryptedData){
+    cipherLength = encryptedData.ciphertext.byteLength
+    
+    const combinedArray = new Uint8Array( cipherLength + IV_LENGTH + SALT_LENGTH);
+    
+    if (!(encryptedData.ciphertext instanceof Uint8Array)) {
+      tolog('encryptedData.ciphertext NOT instanceof Uint8Array'); //DEBUG
+    }
+    if (!(encryptedData.iv instanceof Uint8Array)) {
+      tolog('encryptedData.iv NOT instanceof Uint8Array'); //DEBUG
+    }
+    if (!(encryptedData.salt instanceof Uint8Array)) {
+      tolog('encryptedData.salt NOT instanceof Uint8Array'); //DEBUG
+    }
+
+
+    combinedArray.set(new Uint8Array(encryptedData.ciphertext), 0);   // add ciphertext at beginning of file
+    combinedArray.set(encryptedData.iv, cipherLength);                // add iv after ciphertext
+    combinedArray.set(encryptedData.salt, cipherLength + IV_LENGTH);  // add salt at the end of file
+  
+    return combinedArray;
+  }
+  output = combine(encryptedData)
+
+  downloadWithBrowserAPI('bookmarks-export.enc', output );
+
+  console.log('Bookmarks exported successfully.'); // TAG: release
 }
 
 
 async function handleFileImport(content, passInput_dec) {
   tolog('entered handleFileImport()'); //DEBUG
-  
+  tolog('\t content: ', content); //DEBUG
   // const unzipped_file = await unzip_file(content);
   // // read HTML to get bookmarks
   // const parser = new DOMParser();
   // const document = parser.parseFromString(unzipped_file, 'text/html');
+  encrypted = new Uint8Array(content);
 
-  // read HTML to get bookmarks
+  if (!(content instanceof Uint8Array)) {
+    tolog('content NOT instanceof Uint8Array'); //DEBUG
+  }
+
+  if (!(encrypted instanceof Uint8Array)) {
+    tolog('content NOT instanceof Uint8Array'); //DEBUG
+  }
+
+  // const dec = new TextDecoder();
+  // encrypted = dec.decode(encrypted)
+
+  /**
+   * separates ciphertext, iv and salt
+   * and extracts them into separate variables 
+   * 
+   * note: ciphertext generated that way that it includes authentication tag inside it.
+   */
+  function separate(combinedArray){
+    tolog('entered separate(combinedArray)'); //DEBUG
+    tolog('\t combinedArray: ', combinedArray); //DEBUG
+
+    console.log('\t combinedArray instanceof Uint8Array: ',combinedArray instanceof Uint8Array);
+
+    cipherLength = combinedArray.byteLength - IV_LENGTH - SALT_LENGTH;
+    tolog('\t cipherLength: ', cipherLength); //DEBUG
+    
+
+    let ciphertext = combinedArray.slice(0, cipherLength);
+    let iv = combinedArray.slice(cipherLength, cipherLength + IV_LENGTH);
+    let salt = combinedArray.slice(cipherLength + IV_LENGTH); //slices till the end of array
+
+
+    tolog('\t ciphertext: ', ciphertext); //DEBUG
+    tolog('\t iv: ', iv); //DEBUG
+    tolog('\t salt: ', salt); //DEBUG
+
+    ciphertext = new Uint8Array(ciphertext)
+    iv = new Uint8Array(iv)
+    salt = new Uint8Array(salt)
+
+    tolog('\t ----after Uint8Array()------ '); //DEBUG
+    tolog('\t ciphertext: ', ciphertext); //DEBUG
+    tolog('\t iv: ', iv); //DEBUG
+    tolog('\t salt: ', salt); //DEBUG
+
+    return {ciphertext, iv, salt}
+  }
+  encryptedData = separate(encrypted)
+
+  if (!(encryptedData.ciphertext instanceof Uint8Array)) {
+    tolog('encryptedData.ciphertext NOT instanceof Uint8Array'); //DEBUG
+  }
+  if (!(passInput_dec instanceof Uint8Array)) {
+    tolog('passInput_dec NOT instanceof Uint8Array'); //DEBUG
+  }
+  if (!(encryptedData.salt instanceof Uint8Array)) {
+    tolog('encryptedData.salt NOT instanceof Uint8Array'); //DEBUG
+  }
+  if (!(encryptedData.iv instanceof Uint8Array)) {
+    tolog('encryptedData.iv NOT instanceof Uint8Array'); //DEBUG
+  }
+
+  // tolog('passInput_dec:', passInput_dec); //DEBUG
+  // pass_uint8Array = new Uint8Array(passInput_dec)
+  // tolog('pass_uint8Array:', pass_uint8Array); //DEBUG
+
+  tolog('passInput_dec:', passInput_dec); //DEBUG
+  const enc = new TextEncoder();
+  const passwordBytes = enc.encode(passInput_dec);
+  tolog('passwordBytes:', passwordBytes); //DEBUG
+
+
+  decryptedFile = await decryptHTMLFile(encryptedData.ciphertext, passwordBytes, encryptedData.salt, encryptedData.iv)
+
+  tolog('decryptedFile:', decryptedFile); //DEBUG
+  const decoder = new TextDecoder('utf-8');
+  
+
+  decodedDecryptedFile = decoder.decode(decryptedFile)
+  tolog('decoder.decode(decryptedFile):', decodedDecryptedFile); //DEBUG
+
+
+  // process the decrypted HTML to retrieve original bookmarks
   const parser = new DOMParser();
-  const document = parser.parseFromString(content, 'text/html');
+  const document = parser.parseFromString(decodedDecryptedFile, 'text/html');
   const bookmarks = await extractBookmarksFromHTMLandImport(document); 
 
   tolog('Bookmarks:', bookmarks); //DEBUG
 
-  tolog('Bookmarks imported successfully.'); // TAG: release
+  console.log('Bookmarks imported successfully.'); // TAG: release
 }
 
 
@@ -339,7 +458,10 @@ async function handleFileImport(content, passInput_dec) {
  * 
  */
 async function generateKeyFromPassword(password, salt) {
-
+  tolog('entered generateKeyFromPassword()'); //DEBUG
+  tolog('password: ', password); //DEBUG
+  tolog('salt: ', salt); //DEBUG
+  
   const enc = new TextEncoder();
   const rawKey = enc.encode(password); //password bytes
 
@@ -383,13 +505,32 @@ async function generateKeyFromPassword(password, salt) {
 
 
 async function encryptHTMLFile(htmlContent, password) {
-
+  tolog('entered encryptHTMLFile()'); //DEBUG
   const enc = new TextEncoder();
 
-  const salt = crypto.getRandomValues(new Uint8Array(16));  // 128-bit salt
-  const iv = crypto.getRandomValues(new Uint8Array(12));    // Initialization Vector for AES-GCM (12-byte iv is optimal choice)
 
-  const key = await generateKeyFromPassword(password, salt);  // result of deriveKey()
+
+  const salt = crypto.getRandomValues(new Uint8Array(SALT_LENGTH));  // 128-bit salt
+  const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));    // Initialization Vector for AES-GCM (12-byte iv is optimal choice)
+  
+
+  if (!(htmlContent instanceof Uint8Array)) {
+    tolog('htmlContent NOT instanceof Uint8Array'); //DEBUG
+  }
+  if (!(password instanceof Uint8Array)) {
+    tolog('password NOT instanceof Uint8Array'); //DEBUG
+  }
+  if (!(salt instanceof Uint8Array)) {
+    tolog('salt NOT instanceof Uint8Array'); //DEBUG
+  }
+  if (!(iv instanceof Uint8Array)) {
+    tolog('iv NOT instanceof Uint8Array'); //DEBUG
+  }
+
+
+
+  const key = await generateKeyFromPassword(enc.encode(password), salt);  // result of deriveKey()
+  tolog('key: ', key); //DEBUG
 
   /**
    * encrypt(...) - "It takes as its arguments a key to encrypt with, some algorithm-specific parameters,|
@@ -399,28 +540,75 @@ async function encryptHTMLFile(htmlContent, password) {
    * format of ciphertext is: [Ciphertext][Authentication Tag] ! (iv not included)
    */
   const encryptedContent = await crypto.subtle.encrypt(
-      { name: "AES-GCM", iv: iv },  // AesGcmParams object.
-      key,                          // key
-      enc.encode(htmlContent)       // plaintext
+    { name: "AES-GCM", iv: iv , tagLength: 128 },  // AesGcmParams object. // adding tagLength (Authentication Tag Lenght) here to ensure it was generated.
+    key,                          // key
+    enc.encode(htmlContent)       // plaintext
   );
 
+  tolog('#### ciphertext length: ', encryptedContent.byteLength); //DEBUG
+  tolog('#### iv length: ', iv.byteLength); //DEBUG
+  tolog('#### salt length: ', salt.byteLength); //DEBUG
+  tolog('#### password length', password.length); //DEBUG
+  
   return {
-      salt: salt,
-      iv: iv,
-      encryptedData: new Uint8Array(encryptedContent),
+    salt: salt,
+    iv: iv,
+    ciphertext: encryptedContent,
   };
 }
 
 
+async function decryptHTMLFile(ciphertext, password, salt, iv) {
+  tolog('entered decryptHTMLFile()'); //DEBUG
+  
+  tolog('\t ciphertext: ', ciphertext); //DEBUG
+  tolog('\t password: ', password); //DEBUG
+  tolog('\t iv: ', iv); //DEBUG
+  tolog('\t salt: ', salt); //DEBUG
+
+  if (!(ciphertext instanceof Uint8Array)) {
+    ciphertext = new Uint8Array(ciphertext);
+  }
+  if (!(iv instanceof Uint8Array)) {
+    iv = new Uint8Array(iv);
+  }
+  if (!(salt instanceof Uint8Array)) {
+    salt = new Uint8Array(salt);
+  }
+
+  tolog('#### ciphertext length: ', ciphertext.byteLength); //DEBUG
+  tolog('#### iv length: ', iv.byteLength); //DEBUG
+  tolog('#### salt length: ', salt.byteLength); //DEBUG
+  tolog('#### password ', password.byteLength); //DEBUG
+
+  const key = await generateKeyFromPassword(password, salt);
+  tolog('key: ', key); //DEBUG
+
+  const decryptedContent = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: iv, tagLength: 128 },
+    key,
+    ciphertext
+  ).catch(err => {
+    console.error('Decryption failed: ', err);
+    throw err;
+  });
+  
+  tolog('decryptedContent: ', decryptedContent); //DEBUG
+  return decryptedContent;
+}
+
+
 //----------------------------- Listeners --------------------------------------
+
+browser.runtime.onStartup.addListener(() => {
+  tolog("Extension has started now."); //DEBUG
+});
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.action === 'encrypt') {
     tolog('Listener heard encrypt'); //DEBUG
     handleFileExport(message.passInput_enc);
-    // downloadWithBrowserAPI('bookmarks-export.html', html_string); //todo
-    
   }
   else if (message.action === 'decrypt') {
     tolog('Listener heard decrypt'); //DEBUG
@@ -429,15 +617,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 });
 
-
-// browser.runtime.onStartup.addListener(() => {
-//   tolog("Extension has started now.");
-//   browser.sidebarAction.open(); // opens without clicking, too fast
-// });
-
-
 browser.action.onClicked.addListener(() => {
-  tolog("User clicked on extension icon, opening sidebar."); //
+  tolog("User clicked on extension icon, opening sidebar."); //DEBUG
   browser.sidebarAction.open();
 });
-
