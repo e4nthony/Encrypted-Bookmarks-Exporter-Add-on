@@ -1,10 +1,6 @@
-// requests full bookmarks tree
-let gettingTree = browser.bookmarks.getTree();
-
 
 /* DEBUGGING MODE TOGGLE - enables logging into console */
 const DEBUGGING_MODE = true;
-
 /**
  * logs any arguments the func gets as is .
  * (inside of this file*)
@@ -20,8 +16,9 @@ function tolog(...arguments) {
  * Code bellow will generate html in Netscape-Bookmarks format. 
  * Generator made by reverse engineering.
  */
-html_string = gettingTree.then((bookmarksTree) => {
-  
+async function generateNetscapeHTML() {
+  tolog('entered generateNetscapeHTML()'); //DEBUG
+  bookmarksTree = await browser.bookmarks.getTree()
 
   /* This is initialization of html file that will cointain bookmarks in netscape format, so browsers could read it and import using existing build in tools. */
   let html = `
@@ -74,7 +71,7 @@ html_string = gettingTree.then((bookmarksTree) => {
   tolog('generated HTML:'); //DEBUG
   tolog(html);              //DEBUG
   return html;
-});
+}
 
 
 /**
@@ -85,6 +82,8 @@ html_string = gettingTree.then((bookmarksTree) => {
  * 
  * @param {*} filename 
  * @param {*} contentPromise 
+ * 
+ * usage ex: downloadWithAnchor('bookmarks-export.html', html_string);
  */
 async function downloadWithAnchor(filename, contentPromise) {
 
@@ -100,7 +99,6 @@ async function downloadWithAnchor(filename, contentPromise) {
   
   URL.revokeObjectURL(link.href); // utilize url
 }
-// downloadWithAnchor('bookmarks-export.html', html_string);
 
 
 /**
@@ -257,7 +255,7 @@ async function extractBookmarksFromHTMLandImport(document) {
    * works
    * @returns 
    */
-async function zip_file() {
+async function zip_file(html_string) {
   const zip = new JSZip();
 
   zip.file(`bookmarks-export.html`, html_string); //add file to future zip
@@ -297,7 +295,9 @@ async function zip_file() {
 async function handleFileExport(passInput_enc) {
   tolog('entered handleFileExport()'); //DEBUG
 
-  // const promise = await zip_file();
+  html_string = await generateNetscapeHTML();
+
+  // const promise = await zip_file(html_string);
   // downloadWithBrowserAPI('bookmarks-export.zip', promise);
 
   
