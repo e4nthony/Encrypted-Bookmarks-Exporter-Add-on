@@ -2,8 +2,13 @@
 
 ## 📋 Table of content
 - [Description](#-description)
-- [Preview](#preview)
-- [Installation & Usage](#installing--debugging-in-firefox)
+- [Preview](#-preview)
+- [Installing](#-installing)
+- [Usage](#-usage)
+- [Debugging in firefox & Usage](#-debugging-in-firefox)
+
+
+
 <br/><br/>
 
 ## 📖 Description
@@ -49,7 +54,7 @@ HTML/CSS - for creating the user interface, <br/>
 CryptoJS (built-in browsers) - for encrypring algorithms.
 <br/><br/>
 
-## Preview
+## 🍰 Preview
 
 <table>
     <tr>
@@ -64,7 +69,7 @@ CryptoJS (built-in browsers) - for encrypring algorithms.
 
 <br/><br/>
 
-## Installing 
+## 🛠 Installing 
 Install it directly from Firefox Add-on Site, add-on page:
 
 <div align="center">
@@ -78,7 +83,27 @@ Install it directly from Firefox Add-on Site, add-on page:
 
 <br/><br/>
 
-## Debugging in Firefox 
+## 💻 Usage
+
+By default the addon opens in Exporting mode
+
+### Encrypt & Export
+1. Open add-on.
+2. Enter strong password
+3. Click `Encrypt & Export Bookmarks` button.
+4. Submit save location of encrypted file in opened window.
+
+### Decrypt # Importi
+1. Open add-on.
+2. Click `Import` button, that will change addon mode to Importing mode.
+3. Click `Browse` button.
+4. In opened window select encrypted file you want to import and submit 
+5. Enter password that you encrypted the file with.
+6. Click `Decrypt & Import Bookmarks` button.
+
+<br/><br/>
+
+## ⚙ Debugging in Firefox 
 Alternatively, you can temporarily install addon in debugging mode:
 > Requirements: Installed Firefox browser
 
