@@ -3,7 +3,7 @@
 const SALT_LENGTH = 16
 const IV_LENGTH = 12
 
-const DEBUGGING_MODE = true; /* DEBUGGING MODE TOGGLE - enables logging into console */
+const DEBUGGING_MODE = false; /* DEBUGGING MODE TOGGLE - enables logging into console */
 
 
 /**
