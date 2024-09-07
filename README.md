@@ -2,7 +2,7 @@
 
 ## 📋 Table of content
 - [Description](#-description)
-- [Preview](#-preview)
+- [Preview](#preview)
 - [Installation & Usage](#installing--debugging-in-firefox)
 <br/><br/>
 
@@ -41,6 +41,14 @@ This way the bookmarks don't have to be transferred through internet while stays
 i.e. will not be exposed "as is" to curious people that got access to external physical storage.
 <br/><br/>
 
+
+### Technologies Used
+Firefox WebExtensions API - to interact with browser, <br/>
+JavaScript - for implementing the core functionality, <br/>
+HTML/CSS - for creating the user interface, <br/>
+CryptoJS (built-in browsers) - for encrypring algorithms.
+<br/><br/>
+
 ## Preview
 
 <table>
@@ -54,8 +62,29 @@ i.e. will not be exposed "as is" to curious people that got access to external p
     </tr>
 </table>
 
-## Installing & Debugging in Firefox 
-1. Install Firefox browser on your device.<br/>
+<br/><br/>
+
+## Installing 
+Install it directly from Firefox Add-on Site, add-on page:
+
+<div align="center">
+<a href="https://addons.mozilla.org/firefox/addon/encrypted-bookmarks-exporter/">
+<img alt="Firefox Add-ons" src="https://img.shields.io/badge/Firefox-141e24.svg?&style=for-the-badge&logo=firefox-browser">
+</a>  
+<p>
+<a href="https://addons.mozilla.org/firefox/addon/encrypted-bookmarks-exporter/">https://addons.mozilla.org/firefox/addon/encrypted-bookmarks-exporter/</a>  
+</p>
+</div>
+
+<br/><br/>
+
+## Debugging in Firefox 
+Alternatively, you can temporarily install addon in debugging mode:
+> Requirements: Installed Firefox browser
+
+<br/>
+
+1. Open Firefox.<br/>
 2. Enter this adreess into Firefox's Searchbar:
 ```firefox search bar
     about:debugging#/runtime/this-firefox
