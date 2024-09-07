@@ -2,6 +2,7 @@
 
 ## 📋 Table of content
 - [Description](#-description)
+- [Preview](#-preview)
 - [Installation & Usage](#installing--debugging-in-firefox)
 <br/><br/>
 
@@ -39,6 +40,19 @@ As there is no guaranties that build-in-browser synchronization methods implemen
 This way the bookmarks don't have to be transferred through internet while stays secure all the way to new device,
 i.e. will not be exposed "as is" to curious people that got access to external physical storage.
 <br/><br/>
+
+## Preview
+
+<table>
+    <tr>
+        <th width="350">Import Window</th>
+        <th width="350">Export Window</th>
+    </tr>
+    <tr>
+        <td><img src="/gitpreview/import.png" width="350"></td>
+        <td><img src="/gitpreview/export.png" width="350"></td>
+    </tr>
+</table>
 
 ## Installing & Debugging in Firefox 
 1. Install Firefox browser on your device.<br/>
