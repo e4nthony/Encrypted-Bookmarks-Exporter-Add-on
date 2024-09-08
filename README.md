@@ -5,7 +5,7 @@
 - [Preview](#-preview)
 - [Installing](#-installing)
 - [Usage](#-usage)
-- [Debugging in firefox & Usage](#-debugging-in-firefox)
+- [Debugging in Firefox & Debug Usage](#-debugging-in-firefox)
 
 
 
@@ -70,7 +70,9 @@ CryptoJS (built-in browsers) - for encrypring algorithms.
 <br/><br/>
 
 ## 🛠 Installing 
-Install it directly from Firefox Add-on Site, add-on page:
+> Requirements: Installed Firefox browser
+
+Install the add-on directly from Firefox Add-on Site, add-on page:
 
 <div align="center">
 <a href="https://addons.mozilla.org/firefox/addon/encrypted-bookmarks-exporter/">
@@ -80,6 +82,10 @@ Install it directly from Firefox Add-on Site, add-on page:
 <a href="https://addons.mozilla.org/firefox/addon/encrypted-bookmarks-exporter/">https://addons.mozilla.org/firefox/addon/encrypted-bookmarks-exporter/</a>  
 </p>
 </div>
+
+<br/>
+
+Alternatively, you can [temporarily install addon in debugging mode](#-debugging-in-firefox)
 
 <br/><br/>
 
@@ -93,7 +99,7 @@ By default the addon opens in Exporting mode
 3. Click `Encrypt & Export Bookmarks` button.
 4. Submit save location of encrypted file in opened window.
 
-### Decrypt # Importi
+### Decrypt & Import
 1. Open add-on.
 2. Click `Import` button, that will change addon mode to Importing mode.
 3. Click `Browse` button.
@@ -104,16 +110,14 @@ By default the addon opens in Exporting mode
 <br/><br/>
 
 ## ⚙ Debugging in Firefox 
-Alternatively, you can temporarily install addon in debugging mode:
-> Requirements: Installed Firefox browser
-
-<br/>
+Temporarily install the add-on in debugging mode:<br/>
 
 1. Open Firefox.<br/>
 2. Enter this adreess into Firefox's Searchbar:
 ```firefox search bar
-    about:debugging#/runtime/this-firefox
+about:debugging#/runtime/this-firefox
 ```
 3. Here opens debugging page and we can `Load Temporary Add-on`, click this button.<br/>
 4. Next, locate folder with add-on and select [manifest.json](manifest.json "manifest.json") file in it.<br/>
 5. Optionally, open add-on's console by clicking `Inspect` to inspect log.
+6. Locate add-on icon in `Extensions` menu, accessible via `puzzle icon on toolbar` and also browser settings.
